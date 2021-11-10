@@ -15,7 +15,7 @@ class Mediator implements IMediator {
         return this;
     }
 
-    publish(event: string, data: any) {console.log(event, data);
+    publish(event: string, data: any) {
         if (!this._events[event]) {
             return false;
         }

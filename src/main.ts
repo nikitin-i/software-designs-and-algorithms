@@ -1,13 +1,11 @@
 import { Controller } from './controller/controller';
 import { Model } from './model/model';
-import { InputView } from './view/inputView';
-import { RangeView } from './view/rangeView';
+import { View } from './view/view';
 import { Mediator } from './controller/mediator';
 
 const mediator = new Mediator();
 const model = new Model(mediator);
-const inputView = new InputView(mediator);
-const rangeView = new RangeView(mediator);
+const view = new View(mediator);
 
-const controller = new Controller(model, [inputView, rangeView], mediator);
+const controller = new Controller(model, view, mediator);
 controller.init();

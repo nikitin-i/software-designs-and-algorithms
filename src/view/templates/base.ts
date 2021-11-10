@@ -5,7 +5,7 @@ const baseTemplate = `
         <nav class="currency-convertor__tabs">
             {{#tabs}}
                 <label class="currency-convertor__tab">
-                    <input name="tab" type="radio" value={{value}} {{state}} />
+                    <input id={{value}} name="tab" type="radio" value={{value}} {{state}} />
                     <span class="currency-convertor__label">{{label}}</span>
                 </label>
             {{/tabs}}

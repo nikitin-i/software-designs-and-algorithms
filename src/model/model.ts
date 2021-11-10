@@ -1,37 +1,36 @@
 import { IModel } from '../interfaces/IModel';
 import { IMediator } from '../interfaces/IMediator';
+import { IRates, IRate } from '../interfaces/IRates';
+
+import { getCurrencyRates } from '../utils/mockServise';
+import { EVENTS } from '../utils/vars';
 
 class Model implements IModel {
-    readonly defaults: any = {
-        constants: {
-            GET_CURRENCY_SERVICE: './rates.json'
-        }
-    };
-
-    private _rates: any = {};
+    private _rates: IRates;
 
     constructor(public mediator: IMediator) {}
 
     init(): void {
-        this.getCurrencyRates().then(this.getCurrencyRatesSuccess.bind(this), this.getCurrencyRatesError.bind(this));
+        getCurrencyRates().then(this.getCurrencyRatesSuccess.bind(this));
     }
 
-    async getCurrencyRates() {
-        const response = await fetch(this.defaults.constants.GET_CURRENCY_SERVICE);
-
-        return await response.json();
-    }
-
-    getCurrencyRatesSuccess(data: any): void {
+    getCurrencyRatesSuccess(data: IRates): void {
         this._rates = data;
+        const expandedRates = this.expandRatesByCalculation();
 
-        this.mediator.publish('GET_CURRENCY_RATE', this._rates);
+        this.mediator.publish(EVENTS.GET_CURRENCY_RATES, expandedRates);
     }
 
-    getCurrencyRatesError(data: any): void {
-        console.error('Bad request!');
+    expandRatesByCalculation(): IRates {
+        this._rates!.rates.forEach((item: IRate) => item.calculation = (item.rate * item.amount).toFixed(2));
 
-        this.mediator.publish('GET_CURRENCY_RATE', {error: 'trololo!'});
+        return this._rates;
+    }
+
+    updateRatesData(data: any): void {
+        this._rates!.rates.forEach((item: IRate) => item.code === data.currency && (item.amount = Number(data.amount)));
+
+        this.getCurrencyRatesSuccess(this._rates);
     }
 }
 
